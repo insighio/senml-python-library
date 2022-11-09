@@ -146,10 +146,10 @@ class SenmlPack(SenmlBase):
         :return: None, will call the appropriate callback functions.
         '''
         records = json.loads(data)                                              # load the raw senml data
-        self._process_incomming_data(records, SenmlPack.json_mappings)
+        self._process_incoming_data(records, SenmlPack.json_mappings)
 
 
-    def _process_incomming_data(self, records, naming_map):
+    def _process_incoming_data(self, records, naming_map):
         '''
         generic processor for incoming data (actuators.
         :param records: the list of raw senml data, parsed from a json or cbor structure
@@ -175,6 +175,9 @@ class SenmlPack(SenmlBase):
 
                 if naming_map['bv'] in item:                                        # need to copy the base value assigned to the pack element so we can do proper conversion for actuators.
                     cur_pack_el.base_value = item[naming_map['bv']]
+
+                if naming_map['bt'] in item:
+                    cur_pack_el.base_time = item[naming_map['bt']]
 
                 rec_el = next( (x for x in cur_pack_el._data if x.name == item[naming_map['n']]), None )
                 if rec_el:
@@ -262,7 +265,7 @@ class SenmlPack(SenmlBase):
         records = cbor2.loads(data)  # load the raw senml data
         naming_map = {'bn': -2, 'bt': -3, 'bu': -4, 'bv': -5, 'bs': -16,
                       'n': 0, 'u': 1, 'v': 2, 'vs': 3, 'vb': 4, 'vd': 8, 's': 5, 't': 6, 'ut': 7}
-        self._process_incomming_data(records, naming_map)
+        self._process_incoming_data(records, naming_map)
 
     def to_cbor(self):
         '''
